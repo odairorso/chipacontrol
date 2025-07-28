@@ -14,11 +14,11 @@ export default function App() {
       setSession(session)
     })
 
-    const {  authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session)
-      }
-    )
+    const {
+      data: { subscription: authListener },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
 
     return () => {
       authListener.subscription.unsubscribe()

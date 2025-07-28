@@ -1,20 +1,20 @@
-import { useState } from 'react'
-import { supabase } from '../services/supabaseClient'
+import { useState } from 'react';
+import { supabase } from '../../services/supabaseClient';
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleLogin = async (e) => {
-    e.preventDefault()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    e.preventDefault();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setError(error.message)
+      setError(error.message);
     } else {
-      window.location.href = '/'
+      window.location.href = '/';
     }
-  }
+  };
 
   return (
     <div className="max-w-md mx-auto mt-12 p-6 bg-white rounded shadow">
@@ -45,5 +45,5 @@ export default function Login() {
         Não tem conta? <a href="/register" className="text-green-600">Cadastre-se</a>
       </p>
     </div>
-  )
+  );
 }

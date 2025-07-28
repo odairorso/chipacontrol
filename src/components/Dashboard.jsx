@@ -10,19 +10,19 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchMetrics = async () => {
-      const user = supabase.auth.user()
-      if (!user) return
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
       // Faturamento Bruto
-      const {  sales } = await supabase
+      const { data: sales } = await supabase
         .from('sales')
-        .select('total_amount')
+        .select('total_amount');
 
-      const revenue = sales?.reduce((acc, s) => acc + s.total_amount, 0) || 0
+      const revenue = sales?.reduce((acc, s) => acc + s.total_amount, 0) || 0;
 
       // Despesas Fixas + Variáveis
-      const {  fixed } = await supabase.from('fixed_expenses').select('amount')
-      const {  variable } = await supabase.from('variable_expenses').select('amount')
+      const { data: fixed } = await supabase.from('fixed_expenses').select('amount');
+      const { data: variable } = await supabase.from('variable_expenses').select('amount');
 
       const expenses = 
         (fixed?.reduce((acc, f) => acc + f.amount, 0) || 0) +
