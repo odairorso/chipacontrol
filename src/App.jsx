@@ -10,7 +10,7 @@ export default function App() {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
-    const {  { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
     });
 
