@@ -14,15 +14,29 @@ export default function Dashboard() {
       if (!user) return;
 
       // Faturamento Bruto
-      const { data: sales } = await supabase
+      const { data: sales, error: salesError } = await supabase
         .from('sales')
-        .select('total_amount');
+        .select('total_amount')
+        .eq('user_id', user.id);
+
+      if (salesError) console.error('Erro ao buscar faturamento:', salesError);
 
       const revenue = sales?.reduce((acc, s) => acc + s.total_amount, 0) || 0;
 
       // Despesas Fixas + Variáveis
-      const { data: fixed } = await supabase.from('fixed_expenses').select('amount');
-      const { data: variable } = await supabase.from('variable_expenses').select('amount');
+      const { data: fixed, error: fixedError } = await supabase
+        .from('fixed_expenses')
+        .select('amount')
+        .eq('user_id', user.id);
+      
+      if (fixedError) console.error('Erro ao buscar despesas fixas:', fixedError);
+
+      const { data: variable, error: variableError } = await supabase
+        .from('variable_expenses')
+        .select('amount')
+        .eq('user_id', user.id);
+
+      if (variableError) console.error('Erro ao buscar despesas variáveis:', variableError);
 
       const expenses = 
         (fixed?.reduce((acc, f) => acc + f.amount, 0) || 0) +
