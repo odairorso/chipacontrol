@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from './services/supabaseClient';
-import Auth from './components/Auth/Auth'; // Assuming you have an Auth component
+import Auth from './components/Auth/Auth';
 import Dashboard from './components/Dashboard'; // Assuming you have a Dashboard component
 
 function App() {
