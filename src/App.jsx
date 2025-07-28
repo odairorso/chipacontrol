@@ -1,19 +1,36 @@
-useEffect(() => {
-  // Pega a sessão inicial
-  const getSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    setSession(session)
-  }
+import { useState, useEffect } from 'react';
+import { supabase } from './services/supabaseClient';
+import Auth from './components/Auth/Auth'; // Assuming you have an Auth component
+import Dashboard from './components/Dashboard'; // Assuming you have a Dashboard component
 
-  // Escuta mudanças de autenticação
-  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-    setSession(session)
-  })
+function App() {
+  const [session, setSession] = useState(null);
 
-  getSession()
+  useEffect(() => {
+    // Pega a sessão inicial
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+    };
 
-  // Limpeza
-  return () => {
-    subscription.unsubscribe()
-  }
-}, [])
+    // Escuta mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    getSession();
+
+    // Limpeza
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  return (
+    <div className="App">
+      {!session ? <Auth /> : <Dashboard session={session} />}
+    </div>
+  );
+}
+
+export default App;
