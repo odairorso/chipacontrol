@@ -8,16 +8,29 @@ import Register from './components/Auth/Register';
 
 export default function App() {
   const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+      setLoading(false);
+    };
+
+    getSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
     });
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, []);
+
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
 
   return (
     <BrowserRouter>
@@ -38,10 +51,10 @@ export default function App() {
 
         <main className="py-8 px-4 max-w-4xl mx-auto">
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={session ? <Dashboard /> : <Navigate to="/login" replace />} />
-            <Route path="/ingredientes" element={session ? <IngredientForm /> : <Navigate to="/login" replace />} />
+            <Route path="/login" element={!session ? <Login /> : <Navigate to="/" />} />
+            <Route path="/register" element={!session ? <Register /> : <Navigate to="/" />} />
+            <Route path="/" element={session ? <Dashboard session={session} /> : <Navigate to="/login" replace />} />
+            <Route path="/ingredientes" element={session ? <IngredientForm session={session} /> : <Navigate to="/login" replace />} />
           </Routes>
         </main>
       </div>
