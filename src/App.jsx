@@ -40,8 +40,8 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/" element={session ? <Dashboard /> : (() => { window.location.href = '/login'; return null; })()} />
-            <Route path="/ingredientes" element={session ? <IngredientForm /> : (() => { window.location.href = '/login'; return null; })()} />
+            <Route path="/" element={session ? <Dashboard /> : <Navigate to="/login" replace />} />
+            <Route path="/ingredientes" element={session ? <IngredientForm /> : <Navigate to="/login" replace />} />
           </Routes>
         </main>
       </div>
