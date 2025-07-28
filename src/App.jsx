@@ -1,53 +1,50 @@
-import { useState, useEffect } from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { supabase } from './services/supabaseClient';
+import Dashboard from './components/Dashboard';
+import IngredientForm from './components/IngredientForm';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-import Dashboard from './components/Dashboard';
 
-// Componente para proteger rotas
-const ProtectedRoute = ({ session }) => {
-  if (!session) {
-    return <Navigate to="/login" replace />;
-  }
-  return <Outlet />;
-};
-
-function App() {
+export default function App() {
   const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setLoading(false);
-    };
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {  { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
     });
 
-    getSession();
-
     return () => {
-      subscription?.unsubscribe();
+      subscription.unsubscribe();
     };
   }, []);
 
-  if (loading) {
-    return <div>Carregando...</div>; // Evita piscar a tela de login
-  }
-
   return (
-    <Routes>
-      <Route path="/login" element={!session ? <Login /> : <Navigate to="/" />} />
-      <Route path="/register" element={!session ? <Register /> : <Navigate to="/" />} />
-      <Route element={<ProtectedRoute session={session} />}>
-        <Route path="/" element={<Dashboard session={session} />} />
-      </Route>
-    </Routes>
+    <BrowserRouter>
+      <div className="min-h-screen bg-gray-50">
+        <nav className="bg-green-600 text-white p-4 shadow">
+          <div className="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 className="text-xl font-bold">ChipaControl</h1>
+            {session && (
+              <button
+                onClick={() => supabase.auth.signOut()}
+                className="text-sm bg-white text-green-600 px-3 py-1 rounded hover:bg-gray-200"
+              >
+                Sair
+              </button>
+            )}
+          </div>
+        </nav>
+
+        <main className="py-8 px-4 max-w-4xl mx-auto">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={session ? <Dashboard /> : (() => { window.location.href = '/login'; return null; })()} />
+            <Route path="/ingredientes" element={session ? <IngredientForm /> : (() => { window.location.href = '/login'; return null; })()} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
-
-export default App;
