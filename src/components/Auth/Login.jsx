@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '../../services/supabaseClient';
 
 export default function Login() {
@@ -46,7 +47,7 @@ export default function Login() {
         </button>
       </form>
       <p className="mt-4 text-center">
-        Não tem conta? <a href="/register" className="text-green-600">Cadastre-se</a>
+        Não tem conta? <Link to="/register" className="text-green-600">Cadastre-se</Link>
       </p>
     </div>
   );
